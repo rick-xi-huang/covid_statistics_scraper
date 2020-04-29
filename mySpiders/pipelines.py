@@ -6,6 +6,23 @@
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import logging
 import sqlite3
+import pymongo
+
+
+class MongodbPipeline(object):
+    collection_name = "covid_world"
+
+    def open_spider(self, spider):
+        self.client = pymongo.MongoClient(
+            "mongodb+srv://")
+        self.db = self.client["covid_world"]
+
+    def close_spider(self, spider):
+        self.client.close()
+
+    def process_item(self, item, spider):
+        self.db[self.collection_name].insert(item)
+        return item
 
 
 class SQLlitePipeline(object):
